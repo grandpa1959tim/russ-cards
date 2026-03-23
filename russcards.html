@@ -683,7 +683,11 @@ function testRussian(){
 }
 
 window.onload=function(){
-  try{localStorage.removeItem('rc1_voice');}catch(e){}
+  try{
+    localStorage.removeItem('rc1_voice');
+    localStorage.removeItem('rc1');
+    localStorage.removeItem('vc4_voice');
+  }catch(e){}
   if(window.__ED__&&window.__ED__.cards&&window.__ED__.cards.length){
     decks=window.__ED__.decks||[];
     cards=window.__ED__.cards.map(norm);
