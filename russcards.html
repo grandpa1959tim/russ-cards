@@ -269,6 +269,12 @@ textarea:focus{border-color:var(--acc);}
     <div id="voiceInfo" style="font-size:12px;color:#666;text-align:center;"></div>
   </div>
   <div class="sg">
+    <h3>Display</h3>
+    <div class="sr"><div><div class="sl">Card Numbers</div></div><label class="tg"><input type="checkbox" id="sNM" checked onchange="renderCard()"><span class="ts"></span></label></div>
+    <div class="sr"><div><div class="sl">Breakdown on Russian Side</div></div><label class="tg"><input type="checkbox" id="sBF" onchange="renderCard()"><span class="ts"></span></label></div>
+    <div class="sr"><div><div class="sl">Auto-Speak on Load</div></div><label class="tg"><input type="checkbox" id="sAS"><span class="ts"></span></label></div>
+  </div>
+  <div class="sg">
     <h3>Study Order</h3>
     <div class="sr"><div><div class="sl">Keep Original Order</div></div><label class="tg"><input type="checkbox" id="sOO" onchange="rebuildQ();renderCard()"><span class="ts"></span></label></div>
   </div>
