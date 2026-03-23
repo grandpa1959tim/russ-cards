@@ -260,6 +260,14 @@ textarea:focus{border-color:var(--acc);}
 <div id="pn-boxes" class="pn"><div id="boxGrid"></div></div>
 <div id="pn-settings" class="pn">
   <div class="sg">
+    <h3>Russian Voice</h3>
+    <button onclick="loadRuVoices()" style="width:100%;height:44px;background:var(--sur2);border:1.5px solid var(--brd);border-radius:14px;color:#f5f5f0;font-family:Nunito,sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:8px;">&#128257; Load Available Russian Voices</button>
+    <select id="ruVoiceSel" style="width:100%;height:44px;background:var(--sur);border:1.5px solid var(--brd);border-radius:14px;color:#f5f5f0;font-family:Nunito,sans-serif;font-size:13px;font-weight:700;padding:0 13px;outline:none;cursor:pointer;margin-bottom:8px;">
+      <option>Tap button above first...</option>
+    </select>
+    <button onclick="testRuVoice()" style="width:100%;height:44px;background:rgba(0,212,170,.1);border:1.5px solid rgba(0,212,170,.25);border-radius:14px;color:var(--teal);font-family:Nunito,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">&#128266; Test Selected Voice — е́сли</button>
+  </div>
+  <div class="sg">
     <h3>Display</h3>
     <div class="sr"><div><div class="sl">Breakdown on Russian Side</div></div><label class="tg"><input type="checkbox" id="sBF" onchange="renderCard()"><span class="ts"></span></label></div>
     <div class="sr"><div><div class="sl">Card Numbers</div></div><label class="tg"><input type="checkbox" id="sNM" checked onchange="renderCard()"><span class="ts"></span></label></div>
@@ -665,6 +673,45 @@ function doSaveHTML(){
 var _tt=null,_tb=null;
 function toast(m){var el=document.getElementById('toast');el.textContent=m;el.classList.add('on');if(_tt)clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('on');},2800);}
 function toastBig(m){var el=document.getElementById('toastBig');el.textContent=m;el.classList.add('on');if(_tb)clearTimeout(_tb);_tb=setTimeout(function(){el.classList.remove('on');},3500);}
+
+
+function loadRuVoices(){
+  var voices=speechSynthesis.getVoices();
+  if(!voices||!voices.length){toast('No voices found - try again');return;}
+  var sel=document.getElementById('ruVoiceSel');
+  sel.innerHTML='';
+  // Show ALL voices so user can pick
+  var ru=voices.filter(function(v){return v.lang.indexOf('ru')!==-1;});
+  var other=voices.filter(function(v){return v.lang.indexOf('ru')===-1;});
+  if(ru.length){
+    var g=document.createElement('optgroup');g.label='Russian Voices ('+ru.length+')';
+    ru.forEach(function(v){
+      var o=document.createElement('option');o.value=v.name;o.textContent=v.name+' ('+v.lang+')';g.appendChild(o);
+    });
+    sel.appendChild(g);
+  }
+  var g2=document.createElement('optgroup');g2.label='All Other Voices';
+  other.forEach(function(v){
+    var o=document.createElement('option');o.value=v.name;o.textContent=v.name+' ('+v.lang+')';g2.appendChild(o);
+  });
+  sel.appendChild(g2);
+  sel.onchange=function(){
+    ruVoice=voices.find(function(v){return v.name===sel.value;})||null;
+    localStorage.setItem('rc1_voice',sel.value);
+  };
+  var saved=localStorage.getItem('rc1_voice');
+  if(saved){sel.value=saved;ruVoice=voices.find(function(v){return v.name===saved;})||null;}
+  else if(ru.length){ruVoice=ru[0];sel.value=ru[0].name;}
+  toast('Found '+voices.length+' voices, '+ru.length+' Russian');
+}
+
+function testRuVoice(){
+  var u=new SpeechSynthesisUtterance('е́сли пойдёт дождь');
+  u.lang='ru-RU';
+  u.rate=parseFloat(document.getElementById('spd').value);
+  if(ruVoice)u.voice=ruVoice;
+  speechSynthesis.cancel();speechSynthesis.speak(u);
+}
 
 window.onload=function(){
   if(window.__ED__&&window.__ED__.cards&&window.__ED__.cards.length){
