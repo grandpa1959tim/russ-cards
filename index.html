@@ -684,6 +684,7 @@ function toast(m){var el=document.getElementById('toast');el.textContent=m;el.cl
 function toastBig(m){var el=document.getElementById('toastBig');el.textContent=m;el.classList.add('on');if(_tb)clearTimeout(_tb);_tb=setTimeout(function(){el.classList.remove('on');},3500);}
 
 window.onload=function(){
+  try{localStorage.removeItem('rc1_voice');}catch(e){}
   if(window.__ED__&&window.__ED__.cards&&window.__ED__.cards.length){
     decks=window.__ED__.decks||[];
     cards=window.__ED__.cards.map(norm);
