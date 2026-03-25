@@ -500,12 +500,22 @@ function doDelete(){
   }
 }
 
+function fixRussian(text){
+  // Fix iOS TTS pronunciation of е -> йе at word start and after vowels/spaces
+  return text
+    .replace(/\bЕ/g,'Йе')
+    .replace(/\bе/g,'йе')
+    .replace(/([ ,;:.!?-])Е/g,'$1Йе')
+    .replace(/([ ,;:.!?-])е/g,'$1йе');
+}
+
 function doSpeak(){
   var c=curCard();if(!c)return;
   var fl=document.getElementById('card').classList.contains('flip');
   var isRuSide=(front==='ru')!==fl;
   var text=isRuSide?c.ru:c.en;
   var lang=isRuSide?'ru-RU':'en-US';
+  if(isRuSide) text=fixRussian(text);
   var u=new SpeechSynthesisUtterance(text);
   u.lang=lang;u.rate=parseFloat(document.getElementById('spd').value);
   speechSynthesis.cancel();speechSynthesis.speak(u);
