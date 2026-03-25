@@ -1,4 +1,4 @@
-const CACHE = 'russcards-v1';
+const CACHE = 'russcards-v3';
 
 self.addEventListener('install', function(e){
   e.waitUntil(
