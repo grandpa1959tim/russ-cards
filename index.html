@@ -501,12 +501,13 @@ function doDelete(){
 }
 
 function fixRussian(text){
-  // Fix iOS TTS pronunciation of е -> йе at word start and after vowels/spaces
+  // Fix iOS TTS: replace ALL е/Е with йе/Йе so it sounds like "ye" not "e"
+  // Also fix ё -> йо for same reason
   return text
-    .replace(/\bЕ/g,'Йе')
-    .replace(/\bе/g,'йе')
-    .replace(/([ ,;:.!?-])Е/g,'$1Йе')
-    .replace(/([ ,;:.!?-])е/g,'$1йе');
+    .replace(/Е/g,'Йе')
+    .replace(/е/g,'йе')
+    .replace(/Ё/g,'Йо')
+    .replace(/ё/g,'йо');
 }
 
 function doSpeak(){
