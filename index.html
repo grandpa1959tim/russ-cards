@@ -166,6 +166,7 @@ textarea:focus{border-color:var(--acc);}
 </div>
 <div id="tabs">
   <div class="tb on" onclick="goTab('study')">Study</div>
+  <div class="tb" onclick="goTab('cloze')">Cloze</div>
   <div class="tb" onclick="goTab('add')">Add</div>
   <div class="tb" onclick="goTab('search')" style="font-size:16px;">&#128269;</div>
   <div class="tb" onclick="goTab('decks')">Decks</div>
@@ -238,6 +239,43 @@ textarea:focus{border-color:var(--acc);}
     <div id="futureSpace"></div>
   </div>
 </div>
+<div id="pn-cloze" class="pn">
+  <div id="cloze" style="display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div id="clTopRow" style="display:flex;align-items:center;gap:10px;width:100%;max-width:500px">
+      <div id="clProg" style="font-size:13px;font-weight:800;color:#888">0 / 0</div>
+      <div id="clBoxLbl" style="font-size:11px;font-weight:800;color:#666;letter-spacing:1px"></div>
+      <div style="flex:1"></div>
+      <div id="clWrongCount" onclick="clClearWrong()" title="Tap to clear wrong cards" style="font-size:11px;font-weight:800;color:var(--no);display:none;background:rgba(255,61,87,.12);padding:3px 8px;border-radius:8px;cursor:pointer;user-select:none">&#10007; <span>0</span></div>
+      <div id="clMarkCount" onclick="clClearMarks()" title="Tap to clear marked cards in this deck" style="font-size:11px;font-weight:800;color:var(--gold);display:none;background:rgba(255,215,0,.12);padding:3px 8px;border-radius:8px;cursor:pointer;user-select:none">&#11088; <span>0</span></div>
+    </div>
+    <div id="clChips" style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;width:100%;max-width:500px">
+      <div class="ch2" id="clChLoopMark" onclick="clTogLoop('mark')">&#11088; Loop</div>
+      <div class="ch2" id="clChLoopWrong" onclick="clTogLoop('wrong')">&#10007; Loop</div>
+      <div class="ch2" id="clChMark" onclick="clTogMark()">&#9745; Mark</div>
+    </div>
+    <div id="clCard" style="width:100%;max-width:500px;background:var(--sur);border:1.5px solid var(--brd);border-radius:var(--rad);padding:18px 16px;min-height:260px;display:flex;flex-direction:column;gap:10px;margin-top:4px">
+      <div id="clEmpty" style="display:none;text-align:center;color:#888;padding:40px 0;font-size:14px">No cards in this deck</div>
+      <div id="clMain" style="display:none">
+        <div id="clEn" style="font-size:13px;color:var(--gold);font-style:italic;line-height:1.4;visibility:hidden;min-height:1.4em;margin-bottom:6px"></div>
+        <div id="clSentence" style="font-size:18px;line-height:1.7;color:#f5f5f0;font-weight:700;margin-bottom:6px"></div>
+        <div id="clSentEn" style="font-size:13px;color:#9bd1ff;font-style:italic;line-height:1.4;margin-bottom:14px;display:none"></div>
+        <div id="clChoices" style="display:flex;flex-direction:column;gap:8px"></div>
+        <div id="clFeedback" style="display:none;margin-top:12px;font-size:13px;font-weight:700;text-align:center;padding:8px;border-radius:8px"></div>
+      </div>
+    </div>
+    <div id="clBtnRow" style="display:flex;gap:6px;width:100%;max-width:500px;margin-top:8px">
+      <button id="clBtnReveal" onclick="clReveal()" style="flex:1;height:44px;background:rgba(255,215,0,.1);border:1.5px solid rgba(255,215,0,.3);color:var(--gold);border-radius:var(--rad);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer">&#128065; Reveal</button>
+      <button id="clBtnTrans" onclick="clTogTrans()" style="flex:1;height:44px;background:rgba(155,209,255,.1);border:1px solid rgba(155,209,255,.3);color:#9bd1ff;border-radius:var(--rad);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer">&#127760; Translate</button>
+      <button id="clBtnSpeak" onclick="clSpeak()" style="flex:1;height:44px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.25);color:var(--teal);border-radius:var(--rad);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer">&#128266; Listen</button>
+    </div>
+    <div id="clNextRow" style="display:flex;gap:6px;width:100%;max-width:500px;margin-top:6px">
+      <button id="clBtnNext" onclick="clNext()" style="flex:1;height:44px;background:rgba(74,144,217,.1);border:1.5px solid rgba(74,144,217,.3);color:var(--acc);border-radius:var(--rad);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer">&#9197; Skip</button>
+    </div>
+    <div id="clNoKey" style="display:none;width:100%;max-width:500px;margin-top:6px;padding:12px;background:rgba(255,61,87,.1);border:1px solid rgba(255,61,87,.3);border-radius:var(--rad);font-size:12px;color:#ffaaaa;line-height:1.5">
+      Cloze multiple-choice needs an Anthropic API key to generate decoy words. Set it in <b>Settings</b> &rarr; <b>Cloze (Anthropic API)</b>. Without a key, you can still use Reveal to study.
+    </div>
+  </div>
+</div>
 <div id="pn-add" class="pn">
   <div class="stitle">Add Cards</div>
   <div class="ssub">One card per line · Tab between columns</div>
@@ -263,7 +301,13 @@ textarea:focus{border-color:var(--acc);}
   </div>
   <div id="deckList"></div>
 </div>
-<div id="pn-boxes" class="pn"><div id="boxGrid"></div></div>
+<div id="pn-boxes" class="pn">
+  <div id="boxModeRow" style="display:flex;gap:6px;justify-content:center;margin-bottom:10px">
+    <div class="ch2 on" id="boxModeStudy" onclick="boxMode='study';renderBoxes();">Study Boxes</div>
+    <div class="ch2" id="boxModeCloze" onclick="boxMode='cloze';renderBoxes();">Cloze Boxes</div>
+  </div>
+  <div id="boxGrid"></div>
+</div>
 <div id="pn-settings" class="pn">
   <div class="sg">
     <h3>Display</h3>
@@ -282,6 +326,12 @@ textarea:focus{border-color:var(--acc);}
     <div class="sr"><div><div class="sl">Box 3 - Every 4 days</div></div><span style="color:#ffd700;font-size:17px">&#9679;</span></div>
     <div class="sr"><div><div class="sl">Box 4 - Every 8 days</div></div><span style="color:#00c853;font-size:17px">&#9679;</span></div>
     <div class="sr"><div><div class="sl">Box 5 - Every 16 days</div></div><span style="color:#00d4aa;font-size:17px">&#9679;</span></div>
+  </div>
+  <div class="sg">
+    <h3>Cloze (Anthropic API)</h3>
+    <div style="font-size:12px;color:#aaa;line-height:1.5;margin-bottom:10px">Used to generate multiple-choice decoy words for Cloze mode. Stored only in this browser. Get a key at console.anthropic.com</div>
+    <input type="password" class="fi" id="sAK" placeholder="sk-ant-..." style="margin-top:0;font-family:monospace;font-size:12px" oninput="clSaveKey()">
+    <div id="sAKStatus" style="font-size:11px;color:#666;margin-top:6px">No key set</div>
   </div>
   <div class="sg">
     <h3>Data</h3>
@@ -309,7 +359,7 @@ var decks=[],cards=[],actDeck=null,Q=[],qp=0,front='ru',brkOn=false,studyOn=fals
 
 function saveData(){try{localStorage.setItem(SK,JSON.stringify({decks:decks,cards:cards,actDeck:actDeck,qp:qp}));}catch(e){}}
 function loadData(){try{var r=localStorage.getItem(SK);if(!r)return;var d=JSON.parse(r);decks=d.decks||[];cards=(d.cards||[]).map(norm);}catch(e){decks=[];cards=[];}}
-function norm(c,i){return{id:c.id||rnd(),deckId:c.deckId||null,phrase:c.phrase||'',en:c.en||'',ru:c.ru||'',brk:c.brk||'',note:c.note||'',box:Math.min(5,Math.max(1,parseInt(c.box)||1)),nr:c.nr||Date.now(),ord:c.ord!==undefined?c.ord:i,starred:c.starred||false};}
+function norm(c,i){return{id:c.id||rnd(),deckId:c.deckId||null,phrase:c.phrase||'',en:c.en||'',ru:c.ru||'',brk:c.brk||'',note:c.note||'',box:Math.min(5,Math.max(1,parseInt(c.box)||1)),nr:c.nr||Date.now(),ord:c.ord!==undefined?c.ord:i,starred:c.starred||false,clBox:Math.min(5,Math.max(1,parseInt(c.clBox)||1)),clNr:c.clNr||Date.now(),clDecoys:c.clDecoys||null,clSentEn:c.clSentEn||null,clWrong:c.clWrong||false};}
 function rnd(){return Math.random().toString(36).slice(2,9);}
 function isDue(c){return Date.now()>=c.nr;}
 function sched(c,b){c.box=b;c.nr=new Date().setHours(0,0,0,0)+BD[b]*86400000;}
@@ -589,17 +639,28 @@ function renderMod(){
 function openMod(){renderMod();document.getElementById('mOverlay').classList.add('on');}
 function closeMod(){document.getElementById('mOverlay').classList.remove('on');}
 
+var boxMode='study';
 function renderBoxes(){
-  var cl=['','#ff3d57','#ff8c00','#ffd700','#00c853','#00d4aa'];var nm=['','Box 1-Daily','Box 2-2d','Box 3-4d','Box 4-8d','Box 5-Mastered'];
+  var cl=['','#ff3d57','#ff8c00','#ffd700','#00c853','#00d4aa'];
+  var nm=['','Box 1-Daily','Box 2-2d','Box 3-4d','Box 4-8d','Box 5-Mastered'];
+  // Update mode toggle visuals
+  var sB=document.getElementById('boxModeStudy'),cB=document.getElementById('boxModeCloze');
+  if(sB){sB.classList.toggle('on',boxMode==='study');}
+  if(cB){cB.classList.toggle('on',boxMode==='cloze');}
   var g=document.getElementById('boxGrid');g.innerHTML='';var pool=vis();
+  var boxField=boxMode==='cloze'?'clBox':'box';
+  var nrField=boxMode==='cloze'?'clNr':'nr';
+  function isDueFor(c){return Date.now()>=c[nrField];}
   for(var b=1;b<=5;b++){
-    var bc=pool.filter(function(c){return c.box===b;});var due=bc.filter(function(c){return isDue(c);}).length;
+    var bc=pool.filter(function(c){return c[boxField]===b;});
+    var due=bc.filter(function(c){return isDueFor(c);}).length;
     var div=document.createElement('div');div.className='bxcard';div.style.borderColor=cl[b]+'44';
     div.innerHTML='<div class="bxhd"><div class="bxhl"><div class="bxdot" style="background:'+cl[b]+'"></div><h3>'+nm[b]+'</h3></div><div class="bxct">'+bc.length+(due?' - <span style="color:var(--no)">'+due+'</span>':'')+'</div></div><div class="bxint">'+BD[b]+'d interval</div><div class="bxitems" id="bi'+b+'"></div>';
     g.appendChild(div);var items=div.querySelector('#bi'+b);
     bc.slice().sort(function(a,z){return a.ord-z.ord;}).forEach(function(card){
-      var pill=document.createElement('div');pill.className='bxpill';var d=isDue(card);
-      pill.innerHTML='<span>'+card.phrase+'</span><span class="dbadge '+(d?'dn':'dl')+'">'+(d?'DUE':'+'+Math.ceil((card.nr-Date.now())/86400000)+'d')+'</span>';
+      var pill=document.createElement('div');pill.className='bxpill';var d=isDueFor(card);
+      pill.innerHTML='<span>'+card.phrase+'</span><span class="dbadge '+(d?'dn':'dl')+'">'+(d?'DUE':'+'+Math.ceil((card[nrField]-Date.now())/86400000)+'d')+'</span>';
+      // Tap pill: jump to that card in Study (regardless of mode — study tab is where individual cards live)
       pill.onclick=(function(ca){return function(){var qi=Q.indexOf(cards.indexOf(ca));if(qi!==-1)qp=qi;goTab('study');renderCard();};})(card);
       items.appendChild(pill);
     });
@@ -639,10 +700,11 @@ function doSearch(){
 }
 
 function goTab(t){
-  document.querySelectorAll('.tb').forEach(function(el,i){el.classList.toggle('on',['study','add','search','decks','boxes','settings'][i]===t);});
+  document.querySelectorAll('.tb').forEach(function(el,i){el.classList.toggle('on',['study','cloze','add','search','decks','boxes','settings'][i]===t);});
   document.querySelectorAll('.pn').forEach(function(el){el.classList.remove('on');});
   document.getElementById('pn-'+t).classList.add('on');
   if(t==='boxes')renderBoxes();if(t==='decks')renderDecks();
+  if(t==='cloze')clEnter();
 }
 
 function doReset(){if(!confirm('Reset all progress?'))return;cards.forEach(function(c){c.box=1;c.nr=Date.now();});saveData();rebuildQ();renderCard();toast('Reset done');}
@@ -670,6 +732,596 @@ function doSaveHTML(){
   var b=new Blob([h],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='russcards.html';a.click();toast('Saved!');
 }
 
+// ============ CLOZE MODE ============
+var clQ=[],clQp=0;
+var clQDeckTag=null;        // tracks which deck filter the current queue was built for
+var clLoopMode=null;        // null | 'mark' | 'wrong'
+var clCorrectIdx=-1,clChoiceArr=[];
+var clAnswered=false;       // true once correct pick or Reveal
+var clWordEnOn=false;       // tap-on-box toggles word translation visibility
+var clTransOn=false;        // sticky: keep showing sentence translation across cards
+var clTriedSet={};          // {cardId: {choiceIdx: true}} — wrong picks already made on this card
+var clShuffleCache={};      // {cardId: {arr, correctIdx}} — frozen shuffle order
+var CL_KEY='rc1_anthropic_key';
+
+function clGetKey(){try{return localStorage.getItem(CL_KEY)||'';}catch(e){return'';}}
+function clSaveKey(){
+  var v=document.getElementById('sAK').value.trim();
+  try{if(v)localStorage.setItem(CL_KEY,v);else localStorage.removeItem(CL_KEY);}catch(e){}
+  clUpdKeyStatus();
+}
+function clUpdKeyStatus(){
+  var s=document.getElementById('sAKStatus');var k=clGetKey();
+  if(!s)return;
+  if(k){s.textContent='Key set ('+k.slice(0,10)+'...'+k.slice(-4)+')';s.style.color='var(--ok)';}
+  else{s.textContent='No key set';s.style.color='#666';}
+}
+
+function clBuildQ(){
+  var pool=vis();
+  if(clLoopMode==='mark'){
+    clQ=pool.filter(function(c){return c.starred;}).map(function(c){return cards.indexOf(c);});
+  }else if(clLoopMode==='wrong'){
+    clQ=pool.filter(function(c){return c.clWrong;}).map(function(c){return cards.indexOf(c);});
+  }else{
+    var due=[],later=[];
+    pool.forEach(function(c){var i=cards.indexOf(c);if(Date.now()>=c.clNr)due.push(i);else later.push(i);});
+    later.sort(function(a,b){return cards[a].clNr-cards[b].clNr;});
+    clQ=due.concat(later);
+  }
+  clQp=0;
+  clQDeckTag=typeof actDeck!=='undefined'?actDeck:null;
+}
+
+function clCurCard(){if(!clQ.length||clQp>=clQ.length)return null;return cards[clQ[clQp]];}
+
+function clEnter(){
+  document.getElementById('sAK').value=clGetKey();
+  clUpdKeyStatus();
+  // Preserve progress: rebuild queue only if it's empty, deck filter changed, or current card no longer valid
+  var needRebuild=(!clQ.length)||(clQDeckTag!==(typeof actDeck!=='undefined'?actDeck:null));
+  if(!needRebuild){
+    // Verify current card still exists in the cards array (could have been deleted)
+    if(clQp>=clQ.length||cards[clQ[clQp]]===undefined)needRebuild=true;
+  }
+  if(needRebuild)clBuildQ();
+  clRender();
+}
+
+function clUpdCounters(){
+  var visCards=vis();
+  var nMarked=visCards.filter(function(c){return c.starred;}).length;
+  var mEl=document.getElementById('clMarkCount');
+  if(nMarked>0){mEl.style.display='';mEl.querySelector('span').textContent=nMarked;}
+  else{mEl.style.display='none';}
+  var nWrong=visCards.filter(function(c){return c.clWrong;}).length;
+  var wEl=document.getElementById('clWrongCount');
+  if(nWrong>0){wEl.style.display='';wEl.querySelector('span').textContent=nWrong;}
+  else{wEl.style.display='none';}
+}
+
+function clEscRe(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function clStripMarks(s){return (s||'').replace(/[\u0300-\u036f]/g,'');}
+
+// Find longest common prefix length of two strings
+function clLcpLen(a,b){var n=Math.min(a.length,b.length),i=0;while(i<n&&a.charCodeAt(i)===b.charCodeAt(i))i++;return i;}
+
+// Find best match for phrase in sentence: try exact substring first, then per-word stem-prefix match.
+// Returns {start, end} indices in original sentence, or null.
+function clFindMatch(sentence,phrase){
+  if(!phrase||!sentence)return null;
+  var sentenceBare=clStripMarks(sentence);
+  var phraseBare=clStripMarks(phrase);
+  var lcSentence=sentenceBare.toLowerCase();
+  var lcPhrase=phraseBare.toLowerCase();
+
+  // Helper: map a (start,end) range in BARE/lowercase coords back to ORIGINAL coords.
+  function mapBareToOrig(bareStart,bareEnd){
+    var origStart=-1,origEnd=-1,bareCount=0;
+    for(var i=0;i<sentence.length;i++){
+      var ch=sentence.charCodeAt(i);
+      var isMark=(ch>=0x0300&&ch<=0x036f);
+      if(bareCount===bareStart&&origStart<0)origStart=i;
+      if(bareCount===bareEnd){origEnd=i;break;}
+      if(!isMark)bareCount++;
+    }
+    if(origEnd<0)origEnd=sentence.length;
+    while(origEnd<sentence.length){
+      var c2=sentence.charCodeAt(origEnd);
+      if(c2>=0x0300&&c2<=0x036f)origEnd++;else break;
+    }
+    if(origStart<0)return null;
+    return {start:origStart,end:origEnd};
+  }
+
+  // Try exact substring match first
+  var exact=lcSentence.indexOf(lcPhrase);
+  if(exact>=0)return mapBareToOrig(exact,exact+lcPhrase.length);
+
+  // Stem-prefix fallback: scan word-tokens, pick best by common prefix length
+  // Word = run of letters (Cyrillic/Latin/digits, treating apostrophe and hyphen as part of word)
+  var bestStart=-1,bestEnd=-1,bestLcp=0;
+  var wre=/[\p{L}\p{N}'\-]+/gu;
+  var mm;
+  while((mm=wre.exec(lcSentence))!==null){
+    var token=mm[0];
+    var tStart=mm.index,tEnd=mm.index+token.length;
+    var lcp=clLcpLen(token,lcPhrase);
+    // Acceptance: at least 4 char common prefix, AND prefix covers >= 60% of the shorter word
+    var minLen=Math.min(token.length,lcPhrase.length);
+    if(lcp<4)continue;
+    if(lcp/minLen<0.6)continue;
+    if(lcp>bestLcp){bestLcp=lcp;bestStart=tStart;bestEnd=tEnd;}
+  }
+  if(bestStart<0)return null;
+  return mapBareToOrig(bestStart,bestEnd);
+}
+
+// renderMode: 'blank' (dashed shaded box, tap toggles word-EN), 'filled' (correct answer shown in green)
+function clBlankSentence(sentence,phrase,renderMode){
+  if(!phrase||!sentence)return sentence||'';
+  // Multi-fragment: phrases like "Не только... но и..." have ... placeholders.
+  // Split on ellipsis (... or …), blank each non-empty fragment in left-to-right order.
+  var fragments=phrase.split(/\.{3,}|\u2026/).map(function(s){return s.trim();}).filter(function(s){return s.length>0;});
+  if(fragments.length>1)return clBlankMulti(sentence,fragments,renderMode);
+  // Single-fragment path (unchanged)
+  var match=clFindMatch(sentence,phrase);
+  if(!match)return sentence;
+  var before=sentence.slice(0,match.start);
+  var matched=sentence.slice(match.start,match.end);
+  var after=sentence.slice(match.end);
+  if(renderMode==='filled'){
+    return before+'<span style="background:rgba(0,200,83,.2);color:var(--ok);padding:2px 6px;border-radius:6px;font-weight:800">'+matched+'</span>'+after;
+  }else{
+    return before+'<span id="clBlank" onclick="clTapBlank()" style="display:inline-block;min-width:80px;background:rgba(255,255,255,.04);border:1.5px dashed #666;color:transparent;padding:2px 12px;border-radius:6px;cursor:pointer;user-select:none">_______</span>'+after;
+  }
+}
+
+// Multi-fragment renderer: walks sentence left-to-right, finds each fragment in order,
+// blanks (or fills) each. If any fragment can't be found, returns sentence unchanged.
+function clBlankMulti(sentence,fragments,renderMode){
+  var pieces=[]; // {type:'plain'|'span', text}
+  var cursor=0;
+  for(var f=0;f<fragments.length;f++){
+    var sub=sentence.slice(cursor);
+    var match=clFindMatch(sub,fragments[f]);
+    if(!match)return sentence; // give up, show plain
+    var absStart=cursor+match.start;
+    var absEnd=cursor+match.end;
+    pieces.push({type:'plain',text:sentence.slice(cursor,absStart)});
+    pieces.push({type:'span',text:sentence.slice(absStart,absEnd),idx:f});
+    cursor=absEnd;
+  }
+  pieces.push({type:'plain',text:sentence.slice(cursor)});
+  return pieces.map(function(p){
+    if(p.type==='plain')return p.text;
+    if(renderMode==='filled'){
+      return '<span style="background:rgba(0,200,83,.2);color:var(--ok);padding:2px 6px;border-radius:6px;font-weight:800">'+p.text+'</span>';
+    }else{
+      // Only the first blank carries the click handler; styling identical for all
+      var attrs=p.idx===0?' id="clBlank" onclick="clTapBlank()"':' onclick="clTapBlank()"';
+      return '<span'+attrs+' style="display:inline-block;min-width:60px;background:rgba(255,255,255,.04);border:1.5px dashed #666;color:transparent;padding:2px 10px;border-radius:6px;cursor:pointer;user-select:none">____</span>';
+    }
+  }).join('');
+}
+
+function clRender(){
+  var c=clCurCard();
+  clUpdCounters();
+  document.getElementById('clProg').textContent=(clQp+(c?1:0))+' / '+clQ.length;
+
+  // Loop button states
+  var lmEl=document.getElementById('clChLoopMark');
+  var lwEl=document.getElementById('clChLoopWrong');
+  lmEl.classList.toggle('on',clLoopMode==='mark');
+  lwEl.classList.toggle('on',clLoopMode==='wrong');
+  lmEl.innerHTML=clLoopMode==='mark'?'&#11088; Looping':'&#11088; Loop';
+  lwEl.innerHTML=clLoopMode==='wrong'?'&#10007; Looping':'&#10007; Loop';
+
+  if(!c){
+    document.getElementById('clEmpty').style.display='';
+    var emptyMsg='No cards yet';
+    if(cards.length){
+      if(clLoopMode==='mark')emptyMsg='No marked cards';
+      else if(clLoopMode==='wrong')emptyMsg='No wrong cards yet';
+      else emptyMsg='All cloze cards done for now';
+    }
+    document.getElementById('clEmpty').textContent=emptyMsg;
+    document.getElementById('clMain').style.display='none';
+    document.getElementById('clBoxLbl').textContent='';
+    document.getElementById('clNoKey').style.display='none';
+    document.getElementById('clBtnNext').innerHTML='&#9197; Skip';
+    return;
+  }
+  document.getElementById('clEmpty').style.display='none';
+  document.getElementById('clMain').style.display='';
+
+  var box=parseInt(c.clBox);if(isNaN(box)||box<1||box>5){box=1;c.clBox=1;}
+  var dc=['','#ff3d57','#ff8c00','#ffd700','#00c853','#00d4aa'];
+  var col=dc[box]||'#888';
+  document.getElementById('clBoxLbl').innerHTML='<span style="color:'+col+'">&#9679;</span> CLOZE BOX '+box;
+
+  var mk=document.getElementById('clChMark');
+  mk.classList.toggle('on',c.starred);
+  mk.innerHTML=c.starred?'&#11088; Marked':'&#9745; Mark';
+
+  // Translate button visual state
+  var trBtn=document.getElementById('clBtnTrans');
+  if(clTransOn){
+    trBtn.style.background='rgba(155,209,255,.25)';
+    trBtn.style.borderColor='rgba(155,209,255,.6)';
+  }else{
+    trBtn.style.background='rgba(155,209,255,.1)';
+    trBtn.style.borderColor='rgba(155,209,255,.3)';
+  }
+
+  // Word translation (clEn) — controlled by clWordEnOn (tap on box) and clAnswered
+  var enEl=document.getElementById('clEn');
+  enEl.textContent=c.en||'';
+  enEl.style.visibility=(clWordEnOn||clAnswered)?'visible':'hidden';
+
+  // Render sentence
+  document.getElementById('clSentence').innerHTML=clBlankSentence(c.ru,c.phrase,clAnswered?'filled':'blank');
+
+  // Sentence translation (clSentEn) — controlled by clTransOn
+  var sentEnEl=document.getElementById('clSentEn');
+  if(clTransOn){
+    sentEnEl.style.display='';
+    if(c.clSentEn){sentEnEl.textContent=c.clSentEn;}
+    else if(clGetKey()){sentEnEl.textContent='Translating...';clFetchSentTrans(c);}
+    else{sentEnEl.textContent='(API key needed for sentence translation)';sentEnEl.style.color='#aaa';}
+  }else{
+    sentEnEl.style.display='none';
+  }
+
+  document.getElementById('clFeedback').style.display='none';
+
+  // Next button label: Skip if not answered, Next if answered/revealed
+  var nextBtn=document.getElementById('clBtnNext');
+  if(clAnswered){
+    nextBtn.innerHTML='Next &rarr;';
+    nextBtn.style.background='rgba(74,144,217,.25)';
+    nextBtn.style.borderColor='var(--acc)';
+  }else{
+    nextBtn.innerHTML='&#9197; Skip';
+    nextBtn.style.background='rgba(74,144,217,.1)';
+    nextBtn.style.borderColor='rgba(74,144,217,.3)';
+  }
+
+  // Choices
+  var choicesEl=document.getElementById('clChoices');
+  if(c.clDecoys&&c.clDecoys.length>=3){
+    clShowChoices(c);
+    document.getElementById('clNoKey').style.display='none';
+  }else{
+    choicesEl.innerHTML='';
+    if(!clGetKey()){
+      document.getElementById('clNoKey').style.display='';
+    }else{
+      document.getElementById('clNoKey').style.display='none';
+      choicesEl.innerHTML='<div style="text-align:center;padding:18px;color:#888;font-size:13px">Generating decoys...</div>';
+      clFetchDecoys(c);
+    }
+  }
+}
+
+function clShowChoices(c){
+  // Cache shuffle order per card-id so retries don't reshuffle (which scrambled which choice was correct)
+  if(!clShuffleCache[c.id]){
+    var arr=[c.phrase].concat(c.clDecoys.slice(0,3));
+    for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=arr[i];arr[i]=arr[j];arr[j]=tmp;}
+    clShuffleCache[c.id]={arr:arr,correctIdx:arr.indexOf(c.phrase)};
+  }
+  var cached=clShuffleCache[c.id];
+  clChoiceArr=cached.arr;
+  clCorrectIdx=cached.correctIdx;
+  var tried=clTriedSet[c.id]||{};
+  var el=document.getElementById('clChoices');
+  el.innerHTML=cached.arr.map(function(s,i){
+    var disabled=clAnswered||tried[i];
+    var bg='var(--sur)',bc='var(--brd)',cc='#f5f5f0',cur='pointer';
+    if(clAnswered&&i===clCorrectIdx){bg='rgba(0,200,83,.2)';bc='var(--ok)';cc='var(--ok)';cur='default';}
+    else if(tried[i]){bg='rgba(255,61,87,.15)';bc='var(--no)';cc='var(--no)';cur='default';}
+    else if(clAnswered){cur='default';}
+    return '<button class="clChoice" data-i="'+i+'" '+(disabled?'disabled':'')+' onclick="clPick('+i+')" style="width:100%;text-align:left;padding:14px 16px;background:'+bg+';border:1.5px solid '+bc+';border-radius:var(--rad);color:'+cc+';font-family:\'Nunito\',sans-serif;font-size:15px;font-weight:700;cursor:'+cur+'">'+s+'</button>';
+  }).join('');
+}
+
+function clPick(i){
+  if(clAnswered)return;
+  var c=clCurCard();if(!c)return;
+  if(i===clCorrectIdx){
+    clAnswered=true;
+    var fb=document.getElementById('clFeedback');
+    fb.textContent='\u2713 Correct';fb.style.background='rgba(0,200,83,.15)';fb.style.color='var(--ok)';fb.style.display='';
+    var nb=Math.min(5,(parseInt(c.clBox)||1)+1);c.clBox=nb;c.clNr=new Date().setHours(0,0,0,0)+BD[nb]*86400000;saveData();
+    // Note: clWrong is NOT cleared on correct — wrong cards stay flagged for later review
+    // until the user explicitly clears via the ✗ pill.
+    clRender();
+  }else{
+    if(!clTriedSet[c.id])clTriedSet[c.id]={};
+    clTriedSet[c.id][i]=true;
+    c.clWrong=true; // persistent flag
+    if(!clLoopMode){c.clBox=1;c.clNr=Date.now();}
+    saveData();
+    var fb=document.getElementById('clFeedback');
+    fb.textContent='\u2717 Try again';fb.style.background='rgba(255,61,87,.15)';fb.style.color='var(--no)';fb.style.display='';
+    clShowChoices(c);
+    clUpdCounters();
+  }
+}
+
+// Tap on the shaded blank: toggle word-English translation above sentence
+function clTapBlank(){
+  if(clAnswered)return;
+  clWordEnOn=!clWordEnOn;
+  document.getElementById('clEn').style.visibility=clWordEnOn?'visible':'hidden';
+}
+
+// Reveal: fills the box, shows word English, marks card as answered (no SRS penalty change)
+function clReveal(){
+  var c=clCurCard();if(!c)return;
+  if(clAnswered)return;
+  clAnswered=true;
+  clRender();
+}
+
+function clNext(){
+  // Clean up per-card transient maps for the card we're leaving
+  var leaving=clCurCard();
+  if(leaving){
+    delete clTriedSet[leaving.id];
+    delete clShuffleCache[leaving.id];
+  }
+  clAnswered=false;
+  clWordEnOn=false;
+  // clTransOn persists (sticky)
+  if(clLoopMode){
+    clQp=(clQp+1)%Math.max(1,clQ.length);
+  }else{
+    clQp++;
+    if(clQp>=clQ.length){clBuildQ();}
+  }
+  clRender();
+}
+
+function clTogLoop(mode){
+  if(clLoopMode===mode){
+    clLoopMode=null;
+    clBuildQ();clAnswered=false;clWordEnOn=false;clRender();
+    toast('Loop stopped');
+    return;
+  }
+  if(mode==='mark'){
+    var nMarked=vis().filter(function(c){return c.starred;}).length;
+    if(nMarked===0){toast('No marked cards');return;}
+  }else if(mode==='wrong'){
+    var nWrong=vis().filter(function(c){return c.clWrong;}).length;
+    if(nWrong===0){toast('No wrong cards');return;}
+  }
+  clLoopMode=mode;
+  clBuildQ();clAnswered=false;clWordEnOn=false;clRender();
+  toast('Looping '+clQ.length+' '+(mode==='mark'?'marked':'wrong'));
+}
+
+function clTogMark(){
+  var c=clCurCard();if(!c)return;
+  c.starred=!c.starred;saveData();
+  clRender();
+  toast(c.starred?'Marked':'Unmarked');
+}
+
+function clTogTrans(){
+  clTransOn=!clTransOn;
+  clRender();
+}
+
+function clClearWrong(){
+  var visCards=vis();
+  var wrong=visCards.filter(function(c){return c.clWrong;});
+  if(wrong.length===0)return;
+  if(!confirm('Clear all '+wrong.length+' wrong card(s) in the current deck?'))return;
+  wrong.forEach(function(c){c.clWrong=false;});
+  saveData();
+  if(clLoopMode==='wrong'){clLoopMode=null;clBuildQ();}
+  clAnswered=false;clWordEnOn=false;
+  clRender();
+  toast('Cleared');
+}
+
+function clClearMarks(){
+  var visCards=vis();
+  var marked=visCards.filter(function(c){return c.starred;});
+  if(marked.length===0)return;
+  if(!confirm('Unmark all '+marked.length+' marked card(s) in the current deck?'))return;
+  marked.forEach(function(c){c.starred=false;});
+  saveData();
+  if(clLoopMode==='mark'){clLoopMode=null;clBuildQ();}
+  clAnswered=false;clWordEnOn=false;
+  clRender();
+  toast('Unmarked');
+}
+
+function clSpeak(){
+  var c=clCurCard();if(!c)return;
+  var u=new SpeechSynthesisUtterance(c.ru);
+  u.lang='ru-RU';u.rate=parseFloat(document.getElementById('spd').value);
+  speechSynthesis.cancel();speechSynthesis.speak(u);
+}
+
+// Robust JSON-array extractor: tolerates surrounding prose, embedded brackets in strings.
+function clExtractJsonArray(txt){
+  if(!txt)return null;
+  // Strip markdown code fences if present
+  txt=txt.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');
+  try{var whole=JSON.parse(txt.trim());if(Array.isArray(whole))return whole;}catch(e){}
+  var start=txt.indexOf('[');
+  if(start<0)return null;
+  var depth=0,inStr=false,esc=false;
+  for(var i=start;i<txt.length;i++){
+    var ch=txt.charAt(i);
+    if(esc){esc=false;continue;}
+    if(ch==='\\'&&inStr){esc=true;continue;}
+    if(ch==='"'){inStr=!inStr;continue;}
+    if(inStr)continue;
+    if(ch==='[')depth++;
+    else if(ch===']'){
+      depth--;
+      if(depth===0){
+        try{var p=JSON.parse(txt.slice(start,i+1));if(Array.isArray(p))return p;}catch(e){return null;}
+      }
+    }
+  }
+  return null;
+}
+
+// Rate-limit gate: when we hit a limit, set this to the unix epoch SECONDS at which it resets.
+// All API-using functions check this first and short-circuit with a friendly message.
+var clRateLimitedUntil=0;
+
+// Parse Anthropic API error responses, extracting rate-limit reset time if present.
+// Returns {rateLimited:bool, resetsAt:number|null, friendly:string}
+function clParseApiError(data){
+  if(!data||!data.error)return {rateLimited:false,resetsAt:null,friendly:'API error'};
+  var msg=data.error.message||data.error.type||'API error';
+  var type=data.error.type||'';
+  // Try to detect rate-limit signals
+  var isRl=(type==='rate_limit_error')||/exceeded_limit|rate.?limit|usage.?limit/i.test(msg);
+  var resetsAt=null;
+  // The message body is often a JSON blob containing resetsAt (camelCase) or resets_at
+  try{
+    var inner=JSON.parse(msg);
+    if(inner){
+      if(typeof inner.resetsAt==='number')resetsAt=inner.resetsAt;
+      else if(typeof inner.resets_at==='number')resetsAt=inner.resets_at;
+      // Walk one level deep for nested limit objects (e.g., {"5h":{...,"resets_at":N}})
+      if(!resetsAt){
+        Object.keys(inner).forEach(function(k){
+          var v=inner[k];
+          if(v&&typeof v==='object'){
+            if(typeof v.resets_at==='number'&&(!resetsAt||v.resets_at<resetsAt))resetsAt=v.resets_at;
+            if(typeof v.resetsAt==='number'&&(!resetsAt||v.resetsAt<resetsAt))resetsAt=v.resetsAt;
+          }
+        });
+      }
+    }
+  }catch(e){}
+  // Also try to pull a number from the raw string with a regex as last resort
+  if(isRl&&!resetsAt){
+    var m=msg.match(/"?(?:resets?_?[Aa]t)"?\s*:\s*(\d{9,11})/);
+    if(m)resetsAt=parseInt(m[1]);
+  }
+  var friendly;
+  if(isRl){
+    if(resetsAt){
+      var d=new Date(resetsAt*1000);
+      var hh=String(d.getHours()).padStart(2,'0');
+      var mm=String(d.getMinutes()).padStart(2,'0');
+      friendly='Anthropic API rate limit hit. Resets at '+hh+':'+mm+'. Cards with cached decoys still work.';
+    }else{
+      friendly='Anthropic API rate limit hit. Cards with cached decoys still work.';
+    }
+  }else{
+    friendly='API error: '+(msg.length>140?msg.slice(0,140)+'...':msg);
+  }
+  return {rateLimited:isRl,resetsAt:resetsAt,friendly:friendly};
+}
+
+function clRateLimitedNow(){
+  if(!clRateLimitedUntil)return false;
+  if(Date.now()/1000>=clRateLimitedUntil){clRateLimitedUntil=0;return false;}
+  return true;
+}
+
+function clRateLimitMsg(){
+  if(!clRateLimitedUntil)return 'Anthropic API rate limit hit.';
+  var d=new Date(clRateLimitedUntil*1000);
+  var hh=String(d.getHours()).padStart(2,'0');
+  var mm=String(d.getMinutes()).padStart(2,'0');
+  return 'Anthropic API rate limit hit. Resets at '+hh+':'+mm+'. Cards with cached decoys still work.';
+}
+
+function clFetchDecoys(c){
+  var key=clGetKey();
+  if(!key){clRender();return;}
+  // Short-circuit if we've already hit the rate limit this session
+  if(clRateLimitedNow()){
+    document.getElementById('clChoices').innerHTML='<div style="padding:14px;color:var(--no);font-size:12px;text-align:center;line-height:1.5">'+clRateLimitMsg()+'</div>';
+    return;
+  }
+  var prompt='You are helping build a Russian language flashcard quiz. The target Russian phrase/word is: "'+c.phrase+'" (English: "'+c.en+'"). Generate exactly 3 plausible but INCORRECT Russian decoy options that a learner might confuse with the target. Decoys should be similar in part of speech and register, but clearly wrong in this context. Return ONLY a JSON array of 3 strings, no explanation. Example: ["decoy1","decoy2","decoy3"]';
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-sonnet-4-5',
+      max_tokens:200,
+      messages:[{role:'user',content:prompt}]
+    })
+  }).then(function(r){return r.json();}).then(function(data){
+    if(data.error){
+      var info=clParseApiError(data);
+      if(info.rateLimited){
+        clRateLimitedUntil=info.resetsAt||(Math.floor(Date.now()/1000)+3600);
+      }
+      document.getElementById('clChoices').innerHTML='<div style="padding:14px;color:var(--no);font-size:12px;text-align:center;line-height:1.5">'+info.friendly+'</div>';
+      return;
+    }
+    var txt=(data.content&&data.content[0]&&data.content[0].text)||'';
+    var arr=clExtractJsonArray(txt);
+    if(!arr||arr.length<3)throw new Error('Could not extract 3 decoys from response');
+    c.clDecoys=arr.slice(0,3).map(function(s){return String(s);});saveData();
+    if(clCurCard()===c){clShowChoices(c);}
+  }).catch(function(e){
+    document.getElementById('clChoices').innerHTML='<div style="padding:14px;color:var(--no);font-size:12px;text-align:center">Failed: '+e.message+'</div>';
+  });
+}
+
+function clFetchSentTrans(c){
+  var key=clGetKey();
+  if(!key)return;
+  if(clRateLimitedNow()){
+    if(clCurCard()===c&&clTransOn){document.getElementById('clSentEn').textContent='('+clRateLimitMsg()+')';}
+    return;
+  }
+  var prompt='Translate this Russian sentence into natural English. Return ONLY the English translation, no quotes, no explanation:\n\n'+c.ru;
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-sonnet-4-5',
+      max_tokens:200,
+      messages:[{role:'user',content:prompt}]
+    })
+  }).then(function(r){return r.json();}).then(function(data){
+    if(data.error){
+      var info=clParseApiError(data);
+      if(info.rateLimited){
+        clRateLimitedUntil=info.resetsAt||(Math.floor(Date.now()/1000)+3600);
+      }
+      if(clCurCard()===c&&clTransOn){document.getElementById('clSentEn').textContent='('+info.friendly+')';}
+      return;
+    }
+    var txt=((data.content&&data.content[0]&&data.content[0].text)||'').trim();
+    if(!txt)return;
+    c.clSentEn=txt;saveData();
+    if(clCurCard()===c&&clTransOn){document.getElementById('clSentEn').textContent=txt;}
+  }).catch(function(e){
+    if(clCurCard()===c&&clTransOn){document.getElementById('clSentEn').textContent='(translation failed)';}
+  });
+}
+// ============ END CLOZE MODE ============
+
 var _tt=null,_tb=null;
 function toast(m){var el=document.getElementById('toast');el.textContent=m;el.classList.add('on');if(_tt)clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('on');},2800);}
 function toastBig(m){var el=document.getElementById('toastBig');el.textContent=m;el.classList.add('on');if(_tb)clearTimeout(_tb);_tb=setTimeout(function(){el.classList.remove('on');},3500);}
@@ -692,6 +1344,8 @@ window.onload=function(){
   rebuildQ();
   if(qp>=Q.length)qp=0;
   renderCard();renderDecks();
+  // init cloze API key field
+  try{document.getElementById('sAK').value=clGetKey();clUpdKeyStatus();}catch(e){}
   var card=document.getElementById('card');var sx=0,sy=0,mv=false,tapping=false;
   card.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;mv=false;tapping=true;},{passive:true});
   card.addEventListener('touchmove',function(e){if(Math.abs(e.touches[0].clientX-sx)>10||Math.abs(e.touches[0].clientY-sy)>10){mv=true;tapping=false;}},{passive:true});
